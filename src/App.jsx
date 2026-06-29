@@ -3,6 +3,7 @@ import { supabase } from './supabaseClient'
 import PantallaBienvenida from './components/PantallaBienvenida'
 import PantallaStock from './components/PantallaStock'
 import PantallaRegistrarCompra from './components/PantallaRegistrarCompra'
+import PantallaEditarProducto from './components/PantallaEditarProducto'
 import PantallaReportes from './components/PantallaReportes'
 import TabsInferior from './components/TabsInferior'
 
@@ -10,6 +11,7 @@ export default function App() {
   const [persona, setPersona] = useState(() => localStorage.getItem('persona_nombre') || '')
   const [pantalla, setPantalla] = useState('stock')
   const [vista, setVista] = useState('lista')
+  const [productoEditando, setProductoEditando] = useState(null)
   const [productos, setProductos] = useState([])
   const [movimientos, setMovimientos] = useState([])
   const [cargando, setCargando] = useState(true)
@@ -143,6 +145,27 @@ export default function App() {
     cargarMovimientos()
   }
 
+  function abrirEdicion(producto) {
+    setProductoEditando(producto)
+    setVista('editar')
+  }
+
+  async function guardarEdicion(productoId, cambios) {
+    const { error } = await supabase
+      .from('productos')
+      .update(cambios)
+      .eq('id', productoId)
+
+    if (error) {
+      alert('No se pudo guardar: ' + error.message)
+      return
+    }
+
+    await cargarProductos()
+    setVista('lista')
+    setProductoEditando(null)
+  }
+
   const gastoMes = useMemo(() => {
     const ahora = new Date()
     return Math.round(
@@ -171,6 +194,21 @@ export default function App() {
     )
   }
 
+  if (vista === 'editar' && productoEditando) {
+    return (
+      <PantallaEditarProducto
+        producto={productoEditando}
+        onVolver={() => { setVista('lista'); setProductoEditando(null) }}
+        onGuardar={guardarEdicion}
+        onEliminar={async (producto) => {
+          await eliminarProducto(producto)
+          setVista('lista')
+          setProductoEditando(null)
+        }}
+      />
+    )
+  }
+
   return (
     <div>
       {pantalla === 'stock' && (
@@ -181,6 +219,7 @@ export default function App() {
           onConsumir={consumir}
           onAbrirCompra={() => setVista('compra')}
           onEliminar={eliminarProducto}
+          onEditar={abrirEdicion}
         />
       )}
       {pantalla === 'reportes' && (

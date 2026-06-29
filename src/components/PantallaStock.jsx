@@ -18,7 +18,7 @@ function iconoDe(categoria) {
 
 const ORDEN_CATEGORIAS = ['Lácteos', 'Frescos', 'Carnes', 'Panadería', 'Almacén', 'Bebidas', 'Limpieza', 'Higiene', 'Otros']
 
-export default function PantallaStock({ productos, onConsumir, onAbrirCompra, onEliminar, cargando, gastoMes }) {
+export default function PantallaStock({ productos, onConsumir, onAbrirCompra, onEliminar, onEditar, cargando, gastoMes }) {
   const [busqueda, setBusqueda] = useState('')
   const [orden, setOrden] = useState('alfabetico') // 'alfabetico' | 'stock'
 
@@ -87,6 +87,7 @@ export default function PantallaStock({ productos, onConsumir, onAbrirCompra, on
                 producto={p}
                 onConsumir={onConsumir}
                 onEliminar={onEliminar}
+                onEditar={onEditar}
                 bajo={p.stock <= (p.stock_minimo ?? 1)}
               />
             ))}
@@ -124,7 +125,7 @@ function ordenar(lista, criterio) {
   return copia.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
 }
 
-function FilaProducto({ producto, onConsumir, onEliminar, bajo }) {
+function FilaProducto({ producto, onConsumir, onEliminar, onEditar, bajo }) {
   function manejarEliminar() {
     const confirmado = window.confirm(`¿Eliminar "${producto.nombre}" de la lista? Esto borra también su historial de precios.`)
     if (confirmado) onEliminar(producto)
@@ -160,7 +161,10 @@ function FilaProducto({ producto, onConsumir, onEliminar, bajo }) {
           >+</button>
         </div>
       </div>
-      <button className="btn-eliminar" onClick={manejarEliminar} aria-label="Eliminar producto">🗑 quitar</button>
+      <div className="fila-acciones">
+        <button className="btn-accion-texto" onClick={() => onEditar(producto)}>✎ editar</button>
+        <button className="btn-accion-texto" onClick={manejarEliminar}>🗑 quitar</button>
+      </div>
     </div>
   )
 }
