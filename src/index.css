@@ -364,6 +364,32 @@ input, select {
   border-bottom: none;
 }
 
+.grid-cantidad-rapida {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.btn-cantidad {
+  padding: 10px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--gris-borde);
+  background: var(--blanco);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--azul-texto);
+}
+
+.btn-cantidad.activo {
+  border: 2px solid var(--celeste);
+  background: var(--celeste-claro);
+  color: var(--celeste-oscuro);
+}
+
+.btn-cantidad:active {
+  background: var(--celeste-claro);
+}
+
 .fab {
   position: fixed;
   bottom: 80px;
