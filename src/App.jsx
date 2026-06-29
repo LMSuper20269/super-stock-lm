@@ -128,6 +128,21 @@ export default function App() {
     setVista('lista')
   }
 
+  async function eliminarProducto(producto) {
+    const { error } = await supabase
+      .from('productos')
+      .delete()
+      .eq('id', producto.id)
+
+    if (error) {
+      alert('No se pudo eliminar: ' + error.message)
+      return
+    }
+
+    cargarProductos()
+    cargarMovimientos()
+  }
+
   const gastoMes = useMemo(() => {
     const ahora = new Date()
     return Math.round(
@@ -165,6 +180,7 @@ export default function App() {
           gastoMes={gastoMes}
           onConsumir={consumir}
           onAbrirCompra={() => setVista('compra')}
+          onEliminar={eliminarProducto}
         />
       )}
       {pantalla === 'reportes' && (

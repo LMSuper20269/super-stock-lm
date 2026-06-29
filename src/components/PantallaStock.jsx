@@ -16,7 +16,7 @@ function iconoDe(categoria) {
   return ICONOS_CATEGORIA[categoria] || ICONOS_CATEGORIA['Otros']
 }
 
-export default function PantallaStock({ productos, onConsumir, onAbrirCompra, cargando, gastoMes }) {
+export default function PantallaStock({ productos, onConsumir, onAbrirCompra, onEliminar, cargando, gastoMes }) {
   const [busqueda, setBusqueda] = useState('')
 
   const filtrados = productos.filter(p =>
@@ -61,7 +61,7 @@ export default function PantallaStock({ productos, onConsumir, onAbrirCompra, ca
           <>
             <p className="seccion-titulo">Stock bajo — para comprar</p>
             {stockBajo.map(p => (
-              <FilaProducto key={p.id} producto={p} onConsumir={onConsumir} bajo />
+              <FilaProducto key={p.id} producto={p} onConsumir={onConsumir} onEliminar={onEliminar} bajo />
             ))}
           </>
         )}
@@ -82,7 +82,7 @@ export default function PantallaStock({ productos, onConsumir, onAbrirCompra, ca
         {!cargando && filtrados
           .filter(p => busqueda || !stockBajo.includes(p))
           .map(p => (
-            <FilaProducto key={p.id} producto={p} onConsumir={onConsumir} />
+            <FilaProducto key={p.id} producto={p} onConsumir={onConsumir} onEliminar={onEliminar} />
           ))}
       </div>
 
@@ -91,35 +91,43 @@ export default function PantallaStock({ productos, onConsumir, onAbrirCompra, ca
   )
 }
 
-function FilaProducto({ producto, onConsumir, bajo }) {
+function FilaProducto({ producto, onConsumir, onEliminar, bajo }) {
+  function manejarEliminar() {
+    const confirmado = window.confirm(`¿Eliminar "${producto.nombre}" de la lista? Esto borra también su historial de precios.`)
+    if (confirmado) onEliminar(producto)
+  }
+
   return (
     <div className="card producto-card">
-      <div className="producto-icono">{iconoDe(producto.categoria)}</div>
-      <div className="producto-info">
-        <p className="nombre">
-          {producto.nombre}
-          {bajo && <span className="badge-bajo">bajo</span>}
-        </p>
-        <p className="meta">
-          {producto.ultimo_precio
-            ? `Último precio: $${Number(producto.ultimo_precio).toLocaleString('es-AR')}`
-            : 'Sin precio registrado'}
-        </p>
+      <div className="producto-card-fila">
+        <div className="producto-icono">{iconoDe(producto.categoria)}</div>
+        <div className="producto-info">
+          <p className="nombre">
+            {producto.nombre}
+            {bajo && <span className="badge-bajo">bajo</span>}
+          </p>
+          <p className="meta">
+            {producto.ultimo_precio
+              ? `Último precio: $${Number(producto.ultimo_precio).toLocaleString('es-AR')}`
+              : 'Sin precio registrado'}
+          </p>
+        </div>
+        <div className="contador">
+          <button
+            className="btn-circ"
+            onClick={() => onConsumir(producto, -1)}
+            disabled={producto.stock <= 0}
+            aria-label="Restar"
+          >−</button>
+          <span className="num">{producto.stock}</span>
+          <button
+            className="btn-circ"
+            onClick={() => onConsumir(producto, 1)}
+            aria-label="Sumar"
+          >+</button>
+        </div>
       </div>
-      <div className="contador">
-        <button
-          className="btn-circ"
-          onClick={() => onConsumir(producto, -1)}
-          disabled={producto.stock <= 0}
-          aria-label="Restar"
-        >−</button>
-        <span className="num">{producto.stock}</span>
-        <button
-          className="btn-circ"
-          onClick={() => onConsumir(producto, 1)}
-          aria-label="Sumar"
-        >+</button>
-      </div>
+      <button className="btn-eliminar" onClick={manejarEliminar} aria-label="Eliminar producto">🗑 quitar</button>
     </div>
   )
 }

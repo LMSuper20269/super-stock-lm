@@ -114,8 +114,28 @@ input, select {
 
 .producto-card {
   display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.producto-card-fila {
+  display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.btn-eliminar {
+  align-self: flex-end;
+  background: none;
+  border: none;
+  color: var(--gris-texto);
+  font-size: 13px;
+  padding: 4px 2px;
+  margin-top: 2px;
+}
+
+.btn-eliminar:active {
+  color: var(--rojo);
 }
 
 .producto-icono {
