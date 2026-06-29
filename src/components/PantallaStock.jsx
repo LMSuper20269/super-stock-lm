@@ -16,6 +16,8 @@ function iconoDe(categoria) {
   return ICONOS_CATEGORIA[categoria] || ICONOS_CATEGORIA['Otros']
 }
 
+const ORDEN_CATEGORIAS = ['Lácteos', 'Frescos', 'Carnes', 'Panadería', 'Almacén', 'Bebidas', 'Limpieza', 'Higiene', 'Otros']
+
 export default function PantallaStock({ productos, onConsumir, onAbrirCompra, onEliminar, cargando, gastoMes }) {
   const [busqueda, setBusqueda] = useState('')
   const [orden, setOrden] = useState('alfabetico') // 'alfabetico' | 'stock'
@@ -89,16 +91,38 @@ export default function PantallaStock({ productos, onConsumir, onAbrirCompra, on
           </div>
         )}
 
-        {!cargando && filtrados
-          .filter(p => busqueda || !stockBajo.includes(p))
-          .map(p => (
-            <FilaProducto key={p.id} producto={p} onConsumir={onConsumir} onEliminar={onEliminar} />
-          ))}
+        {!cargando && agruparPorCategoria(
+          filtrados.filter(p => busqueda || !stockBajo.includes(p))
+        ).map(grupo => (
+          <div key={grupo.categoria}>
+            <p className="chip-categoria">{iconoDe(grupo.categoria)} {grupo.categoria}</p>
+            {grupo.items.map(p => (
+              <FilaProducto key={p.id} producto={p} onConsumir={onConsumir} onEliminar={onEliminar} />
+            ))}
+          </div>
+        ))}
       </div>
 
       <button className="fab" onClick={onAbrirCompra} aria-label="Registrar compra">+</button>
     </div>
   )
+}
+
+function agruparPorCategoria(productos) {
+  const grupos = {}
+  productos.forEach(p => {
+    const cat = p.categoria || 'Otros'
+    if (!grupos[cat]) grupos[cat] = []
+    grupos[cat].push(p)
+  })
+
+  return Object.entries(grupos)
+    .map(([categoria, items]) => ({ categoria, items }))
+    .sort((a, b) => {
+      const ia = ORDEN_CATEGORIAS.indexOf(a.categoria)
+      const ib = ORDEN_CATEGORIAS.indexOf(b.categoria)
+      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib)
+    })
 }
 
 function ordenar(lista, criterio) {

@@ -103,6 +103,15 @@ input, select {
   margin-bottom: 16px;
 }
 
+.chip-categoria {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--celeste-oscuro);
+  margin: 14px 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--celeste-claro);
+}
+
 .seccion-titulo {
   font-size: 12px;
   text-transform: uppercase;
