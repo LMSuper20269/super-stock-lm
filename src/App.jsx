@@ -73,7 +73,7 @@ export default function App() {
 
     await supabase
       .from('productos')
-      .update({ stock: nuevoStock })
+      .update({ stock: nuevoStock, ultima_persona: persona })
       .eq('id', producto.id)
 
     await supabase.from('movimientos').insert({
@@ -97,6 +97,7 @@ export default function App() {
         .update({
           stock: nuevoStock,
           ultimo_precio: precio ?? productoExistente.ultimo_precio,
+          ultima_persona: quien,
         })
         .eq('id', productoExistente.id)
     } else {
@@ -108,6 +109,7 @@ export default function App() {
           unidad,
           stock: cantidad,
           ultimo_precio: precio,
+          ultima_persona: quien,
         })
         .select()
         .single()

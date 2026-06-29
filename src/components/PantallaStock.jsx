@@ -144,6 +144,7 @@ function FilaProducto({ producto, onConsumir, onEliminar, onEditar, bajo }) {
             {producto.ultimo_precio
               ? `Último precio: $${Number(producto.ultimo_precio).toLocaleString('es-AR')}`
               : 'Sin precio registrado'}
+            {producto.ultima_persona && ` · ${producto.ultima_persona}`}
           </p>
         </div>
         <div className="contador">
