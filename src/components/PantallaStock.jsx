@@ -27,15 +27,15 @@ export default function PantallaStock({ productos, onConsumir, onAbrirCompra, on
     orden
   )
 
-  const stockBajo = ordenar(productos.filter(p => p.stock <= (p.stock_minimo ?? 1)), orden)
+  const cantidadStockBajo = productos.filter(p => p.stock <= (p.stock_minimo ?? 1)).length
 
   return (
     <div>
       <div className="app-header">
         <h1>🛒 Super Stock LM</h1>
         <p className="subt">
-          {stockBajo.length > 0
-            ? `${stockBajo.length} producto${stockBajo.length > 1 ? 's' : ''} con stock bajo`
+          {cantidadStockBajo > 0
+            ? `${cantidadStockBajo} producto${cantidadStockBajo > 1 ? 's' : ''} con stock bajo`
             : 'Todo en orden por ahora'}
         </p>
       </div>
@@ -69,19 +69,6 @@ export default function PantallaStock({ productos, onConsumir, onAbrirCompra, on
           </div>
         </div>
 
-        {stockBajo.length > 0 && !busqueda && (
-          <>
-            <p className="seccion-titulo">Stock bajo — para comprar</p>
-            {stockBajo.map(p => (
-              <FilaProducto key={p.id} producto={p} onConsumir={onConsumir} onEliminar={onEliminar} bajo />
-            ))}
-          </>
-        )}
-
-        <p className="seccion-titulo">
-          {busqueda ? `Resultados (${filtrados.length})` : 'Todos los productos'}
-        </p>
-
         {cargando && <p className="vacio">Cargando...</p>}
 
         {!cargando && filtrados.length === 0 && (
@@ -91,13 +78,17 @@ export default function PantallaStock({ productos, onConsumir, onAbrirCompra, on
           </div>
         )}
 
-        {!cargando && agruparPorCategoria(
-          filtrados.filter(p => busqueda || !stockBajo.includes(p))
-        ).map(grupo => (
+        {!cargando && agruparPorCategoria(filtrados).map(grupo => (
           <div key={grupo.categoria}>
             <p className="chip-categoria">{iconoDe(grupo.categoria)} {grupo.categoria}</p>
             {grupo.items.map(p => (
-              <FilaProducto key={p.id} producto={p} onConsumir={onConsumir} onEliminar={onEliminar} />
+              <FilaProducto
+                key={p.id}
+                producto={p}
+                onConsumir={onConsumir}
+                onEliminar={onEliminar}
+                bajo={p.stock <= (p.stock_minimo ?? 1)}
+              />
             ))}
           </div>
         ))}
