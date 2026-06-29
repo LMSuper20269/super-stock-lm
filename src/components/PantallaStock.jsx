@@ -18,12 +18,14 @@ function iconoDe(categoria) {
 
 export default function PantallaStock({ productos, onConsumir, onAbrirCompra, onEliminar, cargando, gastoMes }) {
   const [busqueda, setBusqueda] = useState('')
+  const [orden, setOrden] = useState('alfabetico') // 'alfabetico' | 'stock'
 
-  const filtrados = productos.filter(p =>
-    p.nombre.toLowerCase().includes(busqueda.toLowerCase())
+  const filtrados = ordenar(
+    productos.filter(p => p.nombre.toLowerCase().includes(busqueda.toLowerCase())),
+    orden
   )
 
-  const stockBajo = productos.filter(p => p.stock <= (p.stock_minimo ?? 1))
+  const stockBajo = ordenar(productos.filter(p => p.stock <= (p.stock_minimo ?? 1)), orden)
 
   return (
     <div>
@@ -48,13 +50,21 @@ export default function PantallaStock({ productos, onConsumir, onAbrirCompra, on
           </div>
         </div>
 
-        <div className="campo" style={{ marginBottom: 8 }}>
-          <input
-            type="text"
-            placeholder="Buscar producto..."
-            value={busqueda}
-            onChange={e => setBusqueda(e.target.value)}
-          />
+        <div className="fila-campos" style={{ marginBottom: 8 }}>
+          <div className="campo" style={{ flex: 2, marginBottom: 0 }}>
+            <input
+              type="text"
+              placeholder="Buscar producto..."
+              value={busqueda}
+              onChange={e => setBusqueda(e.target.value)}
+            />
+          </div>
+          <div className="campo" style={{ flex: 1, marginBottom: 0 }}>
+            <select value={orden} onChange={e => setOrden(e.target.value)}>
+              <option value="alfabetico">A - Z</option>
+              <option value="stock">Stock ↑</option>
+            </select>
+          </div>
         </div>
 
         {stockBajo.length > 0 && !busqueda && (
@@ -89,6 +99,14 @@ export default function PantallaStock({ productos, onConsumir, onAbrirCompra, on
       <button className="fab" onClick={onAbrirCompra} aria-label="Registrar compra">+</button>
     </div>
   )
+}
+
+function ordenar(lista, criterio) {
+  const copia = [...lista]
+  if (criterio === 'stock') {
+    return copia.sort((a, b) => Number(a.stock) - Number(b.stock))
+  }
+  return copia.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
 }
 
 function FilaProducto({ producto, onConsumir, onEliminar, bajo }) {

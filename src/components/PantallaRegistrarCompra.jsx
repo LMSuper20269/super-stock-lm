@@ -3,38 +3,6 @@ import { useState } from 'react'
 const CATEGORIAS = ['Lácteos', 'Limpieza', 'Almacén', 'Frescos', 'Bebidas', 'Panadería', 'Carnes', 'Higiene', 'Otros']
 const UNIDADES = ['unidad', 'kg', 'litro', 'paquete']
 
-const VALORES_RAPIDOS = {
-  kg: [
-    { etiqueta: '250 g', valor: 0.25 },
-    { etiqueta: '500 g', valor: 0.5 },
-    { etiqueta: '750 g', valor: 0.75 },
-    { etiqueta: '1 kg', valor: 1 },
-    { etiqueta: '1.25 kg', valor: 1.25 },
-    { etiqueta: '1.5 kg', valor: 1.5 },
-  ],
-  litro: [
-    { etiqueta: '250 ml', valor: 0.25 },
-    { etiqueta: '500 ml', valor: 0.5 },
-    { etiqueta: '1 L', valor: 1 },
-    { etiqueta: '1.5 L', valor: 1.5 },
-    { etiqueta: '2 L', valor: 2 },
-    { etiqueta: '3 L', valor: 3 },
-  ],
-  unidad: [
-    { etiqueta: '1', valor: 1 },
-    { etiqueta: '2', valor: 2 },
-    { etiqueta: '3', valor: 3 },
-    { etiqueta: '6', valor: 6 },
-    { etiqueta: '12', valor: 12 },
-  ],
-  paquete: [
-    { etiqueta: '1', valor: 1 },
-    { etiqueta: '2', valor: 2 },
-    { etiqueta: '3', valor: 3 },
-    { etiqueta: '6', valor: 6 },
-  ],
-}
-
 export default function PantallaRegistrarCompra({ productos, onVolver, onGuardar, persona }) {
   const [nombre, setNombre] = useState('')
   const [productoExistente, setProductoExistente] = useState(null)
@@ -115,40 +83,27 @@ export default function PantallaRegistrarCompra({ productos, onVolver, onGuardar
           )}
         </div>
 
-        <div className="campo">
-          <label>Cantidad {unidad === 'kg' || unidad === 'litro' ? `(${unidad})` : ''}</label>
-          <div className="grid-cantidad-rapida">
-            {(VALORES_RAPIDOS[unidad] || VALORES_RAPIDOS.unidad).map(op => (
-              <button
-                key={op.etiqueta}
-                type="button"
-                className={`btn-cantidad ${Number(cantidad) === op.valor ? 'activo' : ''}`}
-                onClick={() => setCantidad(String(op.valor))}
-              >
-                {op.etiqueta}
-              </button>
-            ))}
+        <div className="fila-campos">
+          <div className="campo">
+            <label>Cantidad</label>
+            <input
+              type="number"
+              min="0"
+              step="0.5"
+              value={cantidad}
+              onChange={e => setCantidad(e.target.value)}
+            />
           </div>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            placeholder="O escribí un valor exacto"
-            value={cantidad}
-            onChange={e => setCantidad(e.target.value)}
-            style={{ marginTop: 8 }}
-          />
-        </div>
-
-        <div className="campo">
-          <label>Precio pagado</label>
-          <input
-            type="number"
-            min="0"
-            placeholder="Opcional"
-            value={precio}
-            onChange={e => setPrecio(e.target.value)}
-          />
+          <div className="campo">
+            <label>Precio pagado</label>
+            <input
+              type="number"
+              min="0"
+              placeholder="Opcional"
+              value={precio}
+              onChange={e => setPrecio(e.target.value)}
+            />
+          </div>
         </div>
 
         {!productoExistente && nombre && (
